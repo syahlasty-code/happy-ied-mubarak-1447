@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eid by Syahla</title>
+
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+margin:0;
+font-family:'League Spartan',sans-serif;
+background:#050807;
+color:white;
+overflow-x:hidden;
+}
+
+/* BACKGROUND */
+.bg{
+position:fixed;
+inset:0;
+background:
+radial-gradient(circle at 20% 30%, #0f3d2e, transparent 40%),
+radial-gradient(circle at 80% 70%, #09251c, transparent 40%);
+filter:blur(140px);
+z-index:-1;
+}
+
+/* POLL */
+.poll{
+position:fixed;
+inset:0;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+background:#050807;
+z-index:10;
+transition:0.5s;
+}
+
+/* INTRO */
+.intro{
+position:fixed;
+inset:0;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#050807;
+opacity:0;
+z-index:9;
+pointer-events:none;
+}
+.intro.show{
+opacity:1;
+animation:fadeOut 3s forwards;
+}
+@keyframes fadeOut{
+100%{opacity:0;visibility:hidden;}
+}
+
+/* MAIN */
+.container{
+max-width:600px;
+margin:120px auto;
+padding:30px;
+text-align:center;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(12px);
+border-radius:20px;
+}
+
+/* TITLE */
+h1{
+font-size:50px;
+opacity:0;
+transform:translateY(20px);
+transition:1s;
+}
+h1.show{opacity:1;transform:translateY(0);}
+
+/* BUTTON */
+button{
+margin:10px;
+padding:12px 20px;
+border:none;
+border-radius:30px;
+background:gold;
+cursor:pointer;
+}
+
+/* ENVELOPE */
+.envelope{
+margin:30px auto;
+width:120px;
+height:80px;
+background:gold;
+display:none;
+cursor:pointer;
+position:relative;
+}
+.flap{
+position:absolute;
+width:100%;
+height:100%;
+background:orange;
+clip-path:polygon(0 0,100% 0,50% 50%);
+transition:0.6s;
+}
+.open .flap{transform:rotateX(180deg);}
+
+/* RESULT */
+#result{margin-top:20px;}
+#bar{
+height:6px;
+background:gold;
+width:0;
+margin-top:10px;
+}
+
+/* CONFETTI */
+.confetti{
+position:fixed;
+width:8px;
+height:8px;
+background:gold;
+top:0;
+animation:fall 3s linear forwards;
+}
+@keyframes fall{
+to{transform:translateY(100vh);opacity:0;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg"></div>
+
+<!-- POLL -->
+<div class="poll" id="poll">
+<h2> Alhamdulillah jadi Lebaran</h2>
+<p>mau THR berapa? 😏</p>
+<button onclick="vote()">Gas</button>
+</div>
+
+<!-- INTRO -->
+<div class="intro" id="intro">
+<h2>Loading...</h2>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+<h1 id="title">Selamat Hari Raya 🌙</h1>
+<div id="typing"></div>
+
+<button id="btn" onclick="showEnvelope()">Ambil THR</button>
+
+<div class="envelope" id="env" onclick="openEnv()">
+<div class="flap"></div>
+</div>
+
+<div id="result"></div>
+<div id="bar"></div>
+</div>
+
+<script>
+
+/* POLL */
+function vote(){
+let poll=document.getElementById("poll");
+
+poll.style.opacity="0";
+poll.style.pointerEvents="none";
+
+setTimeout(()=>{
+poll.style.display="none";
+startIntro();
+},500);
+}
+
+/* INTRO */
+function startIntro(){
+let intro=document.getElementById("intro");
+intro.classList.add("show");
+
+setTimeout(()=>{
+document.getElementById("title").classList.add("show");
+type();
+},1000);
+}
+
+/* TYPING */
+let text=[
+"MINAL AIDIN WAL FA IZINNNNNNN.",
+"Aku, Syahla, minta maaf ya.",
+"PERNAH BIKIN KESEL SAMPE BIKIN DENDAM IZINN DIMAAFKAN ALHAMDULILLAH SADAR DIRI BANYAK SALAH"
+];
+
+let i=0,j=0,cur="";
+function type(){
+if(i<text.length){
+if(j<text[i].length){
+cur+=text[i][j];
+document.getElementById("typing").innerHTML=cur;
+j++;
+setTimeout(type,30);
+}else{
+cur+="<br><br>";
+j=0;i++;
+setTimeout(type,400);
+}
+}else{
+document.getElementById("btn").style.display="block";
+}
+}
+
+/* THR */
+function showEnvelope(){
+document.getElementById("env").style.display="block";
+}
+
+function openEnv(){
+let env=document.getElementById("env");
+env.classList.add("open");
+
+let steps=[
+"Menghubungkan...",
+"Verifikasi...",
+"Transfer...",
+"Rp 1.000.000 💰",
+"Berhasil...",
+"ERROR 😭",
+"AHAHAHHAHAHAHAHHAAAHAHA BERHARAP APAA 😔"
+];
+
+let i=0;
+let progress=0;
+
+let interval=setInterval(()=>{
+document.getElementById("result").innerHTML=steps[i];
+
+if(i<4){
+progress+=25;
+document.getElementById("bar").style.width=progress+"%";
+}
+
+i++;
+if(i===steps.length){
+clearInterval(interval);
+confetti();
+}
+},800);
+}
+
+/* CONFETTI */
+function confetti(){
+for(let i=0;i<20;i++){
+let c=document.createElement("div");
+c.className="confetti";
+c.style.left=Math.random()*100+"%";
+document.body.appendChild(c);
+setTimeout(()=>c.remove(),3000);
+}
+}
+
+</script>
+
+</body>
+</html>
